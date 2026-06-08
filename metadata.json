@@ -1,0 +1,6 @@
+{
+  "name": "Smart Scans",
+  "description": "An intraday stock scanner providing professional structured Technical Analysis reports.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
