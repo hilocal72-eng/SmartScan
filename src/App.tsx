@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { Header } from "./components/Header";
 import { StockAnalysis } from "./types";
+import { DEFAULT_PRESET_STOCKS } from "./data/presets";
 
 export default function App() {
   const [tickerInput, setTickerInput] = useState("");
@@ -42,10 +43,11 @@ export default function App() {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        setHistory(parsed);
-        if (parsed.length > 0) {
+        const singleScan = parsed.slice(0, 1);
+        setHistory(singleScan);
+        if (singleScan.length > 0) {
           // Open the main header where it shows stock name
-          setExpandedStocks({ [parsed[0].ticker]: true });
+          setExpandedStocks({ [singleScan[0].ticker]: true });
           // Ensure all inner tabs are closed state
           setSubsections({});
         }
@@ -57,7 +59,7 @@ export default function App() {
       const relianceSample: StockAnalysis = {
         ticker: "RELIANCE",
         name: "Reliance Industries Limited",
-        currentPrice: "₹1,295.40",
+        currentPrice: "₹2,950.40",
         action: "NO-TRADE",
         trendDaily: "Price consolidated below standard moving limits.",
         trendHourly: "Range bound action with horizontal resistance.",
@@ -150,11 +152,8 @@ export default function App() {
         result.action = "NO-TRADE";
       }
 
-      // Prepend to history, max 10 elements
-      const freshHistory = [
-        result,
-        ...history.filter((item) => item.ticker.toUpperCase() !== result.ticker.toUpperCase())
-      ].slice(0, 10);
+      // Only keep the latest 1 scan
+      const freshHistory = [result];
 
       saveHistory(freshHistory);
       setTickerInput("");
@@ -238,7 +237,7 @@ export default function App() {
             <Search className="h-4.5 w-4.5 text-[#00b0ff]" /> Technical Analysis Scan
           </h2>
           <p className="text-[11px] text-zinc-650 mb-3.5 font-medium leading-normal">
-            Enter a domestic or global stock ticker to perform live structural scans and trace breakout configurations:
+            Enter a National Stock Exchange of India (NSE) ticker symbol to perform live intraday scans:
           </p>
 
           <form 
@@ -252,7 +251,7 @@ export default function App() {
               <input
                 id="search-ticker"
                 type="text"
-                placeholder="Enter stock ticker or company name (e.g., RELIANCE, TCS, AAPL, TSLA)"
+                placeholder="Enter NSE Ticker Symbol (e.g., RELIANCE, TCS, INFY, TATAMOTORS)"
                 value={tickerInput}
                 onChange={(e) => setTickerInput(e.target.value)}
                 disabled={isScanning}
@@ -275,6 +274,26 @@ export default function App() {
               )}
             </button>
           </form>
+
+          {/* Graphical NSE Preset Stock Selectors */}
+          <div className="mt-4 flex flex-wrap gap-1.5 items-center">
+            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mr-1">Quick Presets:</span>
+            {DEFAULT_PRESET_STOCKS.map((stock) => (
+              <button
+                key={stock.ticker}
+                type="button"
+                onClick={() => {
+                  setTickerInput(stock.ticker);
+                  executeScan(stock.ticker);
+                }}
+                disabled={isScanning}
+                className="px-2.5 py-1 bg-zinc-50 hover:bg-[#00b0ff]/10 hover:text-[#00b0ff] hover:border-[#00b0ff] border border-zinc-300 rounded-md text-[10.5px] font-mono text-zinc-800 font-semibold transition-all pointer-events-auto cursor-pointer disabled:opacity-50"
+                title={stock.description}
+              >
+                {stock.ticker}
+              </button>
+            ))}
+          </div>
         </section>
 
         {/* Loading Progress indicator */}
@@ -316,21 +335,10 @@ export default function App() {
           <div className="flex items-center justify-between border-b-2 border-black pb-1.5">
             <div className="flex items-center gap-2">
               <span className="text-[11px] font-bold tracking-widest text-black uppercase">
-                Active Scans
-              </span>
-              <span className="bg-black text-white px-2 py-0.5 text-[10px] rounded-full border border-black font-bold">
-                {history.length}
+                Scan Analysis
               </span>
             </div>
-            {history.length > 0 && (
-              <button
-                id="clear-all-btn"
-                onClick={clearAll}
-                className="text-zinc-700 hover:text-rose-600 transition-all text-xs flex items-center gap-1 font-bold pointer-events-auto cursor-pointer"
-              >
-                <Trash2 className="h-3.5 w-3.5" /> <span className="text-[11px] uppercase tracking-wider">Reset List</span>
-              </button>
-            )}
+            {/* Removed Clear Scan button */}
           </div>
 
           {history.length === 0 ? (
@@ -338,7 +346,7 @@ export default function App() {
               <Layers className="h-7 w-7 text-zinc-500" />
               <p className="text-xs font-bold text-zinc-800 uppercase tracking-wider">No active scans</p>
               <p className="text-[11px] text-zinc-500 max-w-xs leading-normal">
-                Enter a global/NSE stock ticker above or trigger a custom check to populate technical analysis elements.
+                Enter an NSE stock ticker above or click one of the quick presets to perform technical analysis.
               </p>
             </div>
           ) : (
@@ -389,8 +397,8 @@ export default function App() {
 
                           <div className="min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
-                              <span className="font-mono text-sm font-bold text-black">
-                                ${stock.ticker}
+                              <span className="font-mono text-xs font-bold text-[#00b0ff] bg-[#00b0ff]/10 border border-[#00b0ff]/20 px-1.5 py-0.5 rounded">
+                                NSE: {stock.ticker.replace(/\.NS$/, "")}
                               </span>
                               <span className="text-[11px] text-zinc-700 font-bold truncate max-w-[150px] md:max-w-xs">
                                 {stock.name || stock.ticker}
@@ -713,29 +721,6 @@ export default function App() {
           )}
         </section>
 
-        {/* Tactical Intraday Trading Guidelines Panel */}
-        <section className="bg-white border-2 border-black rounded-xl p-4 md:p-5 text-[11px] space-y-3 relative shadow-[4px_4px_0px_#000000]">
-          <h3 className="font-bold text-black tracking-widest uppercase flex items-center gap-1.5 text-xs">
-            <Target className="h-4.5 w-4.5 text-[#00b0ff]" /> Strategy Execution Guidelines
-          </h3>
-          <p className="text-zinc-800 leading-normal font-medium text-[11px]">
-            Please review standard configuration checklists and structural rules before committing intraday positions:
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-0.5">
-            <div className="bg-zinc-50 p-2.5 rounded-lg border border-zinc-300">
-              <span className="font-bold text-[#00b0ff] block mb-0.5 uppercase text-[10px]">Timeframe Synchronization</span>
-              Evaluate trends in the direction where short-interval trends align with broader macro timeframe bounds.
-            </div>
-            <div className="bg-zinc-50 p-2.5 rounded-lg border border-zinc-300">
-              <span className="font-bold text-[#00b0ff] block mb-0.5 uppercase text-[10px]">Breakout Validation</span>
-              Confirm support buffers and immediate resistance ceilings trigger proper breakouts before entry flags.
-            </div>
-            <div className="bg-zinc-50 p-2.5 rounded-lg border border-zinc-300">
-              <span className="font-bold text-[#00b0ff] block mb-0.5 uppercase text-[10px]">Volume Checks</span>
-              Ensure structural intervals receive corresponding volume backing to filter flash liquidity sweeps.
-            </div>
-          </div>
-        </section>
 
       </main>
     </div>

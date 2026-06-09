@@ -4,31 +4,36 @@ export const DEFAULT_PRESET_STOCKS: PresetStock[] = [
   {
     ticker: "RELIANCE",
     name: "Reliance Industries Ltd.",
-    description: "NSE: RELIANCE | Diversified industrial conglomerate"
+    description: "NSE: RELIANCE | Energy, retail & telecom conglomerate"
   },
   {
     ticker: "TCS",
     name: "Tata Consultancy Services Ltd.",
-    description: "NSE: TCS | Global IT services major"
+    description: "NSE: TCS | Global IT services & consulting giant"
   },
   {
-    ticker: "AAP_L",
-    name: "Apple Inc.",
-    description: "NASDAQ: AAPL | Consumer electronics giant"
+    ticker: "INFY",
+    name: "Infosys Ltd.",
+    description: "NSE: INFY | Digital services & information technology major"
   },
   {
-    ticker: "TSLA",
-    name: "Tesla Inc.",
-    description: "NASDAQ: TSLA | Electric vehicles and clean energy"
+    ticker: "HDFCBANK",
+    name: "HDFC Bank Ltd.",
+    description: "NSE: HDFCBANK | India's largest private sector bank"
+  },
+  {
+    ticker: "TATAMOTORS",
+    name: "Tata Motors Ltd.",
+    description: "NSE: TATAMOTORS | Commercial & passenger automotive developer"
+  },
+  {
+    ticker: "SBIN",
+    name: "State Bank of India",
+    description: "NSE: SBIN | India's largest public sector banking institution"
   },
   {
     ticker: "NIFTY",
     name: "Nifty 50 Index",
-    description: "NSE Benchmark index tracking Indian markets"
-  },
-  {
-    ticker: "MSFT",
-    name: "Microsoft Corp.",
-    description: "NASDAQ: MSFT | Enterprise cloud & AI technologies"
+    description: "NSE Benchmark | Index tracking India's top 50 blue-chip firms"
   }
 ];
